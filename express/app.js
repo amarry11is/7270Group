@@ -19,17 +19,6 @@ passport.use(new BearerStrategy(
   }
 ));
 
-var jwt = require('jsonwebtoken');
-var passport = require('passport');
-var BearerStrategy = require('passport-http-bearer').Strategy;
-passport.use(new BearerStrategy(
-  function (token, done) {
-    jwt.verify(token, process.env.TOKEN_SECRET, function (err, decoded) {
-      if (err) { return done(err); }
-      return done(null, decoded, { scope: "all" });
-    });
-  }
-));
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
