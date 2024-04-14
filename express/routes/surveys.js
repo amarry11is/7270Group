@@ -110,34 +110,6 @@ router.post('/login', async function (req, res, next) {
     }
 });
 
-router.post('/login', async function (req, res, next) {
-    const db = await connectToDB();
-    try {
-        // check if the user exists
-        var user = await db.collection("users").findOne({ email: req.body.email });
-        if (!user) {
-            res.status(401).json({ message: 'User not found' });
-            return;
-        }
-
-        // res.json(user);
-
-        delete user.password;
-        delete user.ip_address;
-
-        // generate a JWT token
-        const token = generateToken(user);
-
-        // return the token
-        res.json({ token: token });
-
-    } catch (err) {
-        res.status(400).json({ message: err.message });
-    } finally {
-        await db.client.close();
-    }
-});
-
 var passport = require('passport');
 
 // Specify Survey being managed by a user
