@@ -3,22 +3,23 @@ var router = express.Router();
 const { generateToken, isRay } = require('../utils/auth');
 
 /* GET users listing. */
-router.get('/',  function (req, res, next) {
+router.get('/', isRay, function (req, res, next) {
   res.send('respond with a resource');
 });
 
 const { connectToDB, ObjectId } = require('../utils/db');
 
-router.get('/with/bookings', async function (req, res) {
+
+router.get('/with/surveys', async function (req, res) {
   const db = await connectToDB();
   try {
-    let result = await db.collection("bookings").aggregate([
+    let result = await db.collection("surveys").aggregate([
       {
         $lookup: {
-          from: "bookings",
+          from: "surveys",
           localField: "_id",
           foreignField: "manager",
-          as: "bookings"
+          as: "surveys"
         }
       },
       // remove the ip_address field

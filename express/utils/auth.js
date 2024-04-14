@@ -7,4 +7,13 @@ const generateToken = function (user) {
     });
 }
 
-module.exports = { generateToken };
+const isRay = function (req, res, next) {
+
+    // extra checking
+    if (req.user.email != "rscutching1@fc2.com" || req.authInfo.scope != "all") {
+        return res.status(401).send('Unauthorized: Invalid role');
+    }
+    next();
+}
+
+module.exports = { generateToken, isRay };
