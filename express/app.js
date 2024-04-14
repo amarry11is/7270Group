@@ -7,6 +7,17 @@ var logger = require('morgan');
 var surveysRouter = require('./routes/surveys');
 
 var app = express();
+var jwt = require('jsonwebtoken');
+var passport = require('passport');
+var BearerStrategy = require('passport-http-bearer').Strategy;
+passport.use(new BearerStrategy(
+  function (token, done) {
+    jwt.verify(token, process.env.TOKEN_SECRET, function (err, decoded) {
+      if (err) { return done(err); }
+      return done(null, decoded, { scope: "all" });
+    });
+  }
+));
 
 var jwt = require('jsonwebtoken');
 var passport = require('passport');
@@ -29,7 +40,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-
+app.use('/users', passport.authenticate('bearer', { session: false }), usersRouter);
 app.use('/surveys', surveysRouter);
 app.use('/users', passport.authenticate('bearer', { session: false }), usersRouter);
 
