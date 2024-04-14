@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue'
 import { useRoute } from "vue-router";
 import xyChart from '../components/xyChart.vue'
 import HelloWorld from '../components/HelloWorld.vue'
+import { differenceInDays } from 'date-fns'
 
 const route = useRoute();
 
@@ -143,6 +144,13 @@ onMounted(async () => {
             </div>
 
         </div>
-
+        <div v-if="route.name == 'view-survey'">
+            <h1>{{ survey.email }}</h1>
+            <p>Categories: {{ survey.categories }}</p>
+            <p>Budget: {{ survey.budget }}</p>
+            <p>Purpose: {{ survey.purpose }}</p>
+            <p>Terms and Conditions: {{ survey.terms }}</p>
+            <p>Last Modified: {{ differenceInDays(new Date(), new Date(survey.modified_at)) }} ago.</p>
+        </div>
     </main>
 </template>
