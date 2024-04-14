@@ -3,11 +3,7 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-<<<<<<< HEAD
-var usersRouter = require('./routes/users')
-=======
 var usersRouter = require('./routes/users'); 
->>>>>>> 372ca4a5e9d3921cdc37d07802f1bb61f1df02c4
 var surveysRouter = require('./routes/surveys');
 
 var app = express();
