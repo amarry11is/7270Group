@@ -8,7 +8,7 @@ import Oruga from '@oruga-ui/oruga-next';
 import { bootstrapConfig } from '@oruga-ui/theme-bootstrap';
 
 import '@oruga-ui/theme-bootstrap/dist/bootstrap.css';
-import '@mdi/font/css/materialdesignicons.min.css';
+// import '@mdi/font/css/materialdesignicons.min.css';
 
 // import 'bootstrap/dist/css/bootstrap.css'
 import "bootstrap"

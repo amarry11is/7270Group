@@ -4,23 +4,8 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
-var bookingsRouter = require('./routes/bookings');
+var surveysRouter = require('./routes/surveys');
 
-process.env.TOKEN_SECRET = 'secret';
-
-var jwt = require('jsonwebtoken');
-var passport = require('passport');
-var BearerStrategy = require('passport-http-bearer').Strategy;
-passport.use(new BearerStrategy(
-  function (token, done) {
-    jwt.verify(token, process.env.TOKEN_SECRET, function (err, decoded) {
-      if (err) { return done(err); }
-      return done(null, decoded, { scope: "all" });
-    });
-  }
-));
 var app = express();
 
 // view engine setup
@@ -33,10 +18,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-// app.use('/users', usersRouter);
-app.use('/users', passport.authenticate('bearer', { session: false }), usersRouter);
-app.use('/bookings', bookingsRouter);
+app.use('/surveys', surveysRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -53,4 +35,5 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
 module.exports = app;

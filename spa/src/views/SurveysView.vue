@@ -10,9 +10,6 @@ watch(() => search.value, () => {
 const data = ref([]);
 const total = ref(0);
 const loading = ref(false);
-const sortField = ref("numTickets");
-const sortOrder = ref("desc");
-const defaultSortOrder = ref("desc");
 const page = ref(1);
 const perPage = ref(20);
 
@@ -22,13 +19,13 @@ const loadAsyncData = () => {
         // "language=en-US",
         // "include_adult=false",
         // "include_video=false",
-        `sort_by=${sortField.value}.${sortOrder.value}`,
+        // `sort_by=${sortField.value}.${sortOrder.value}`,
         `page=${page.value}`,
         `email=${search.value}`,
     ].join("&");
     loading.value = true;
 
-    fetch(`/api/bookings?${params}`)
+    fetch(`/api/surveys?${params}`)
         .then((response) => response.json())
         .then((result) => {
             perPage.value = result.perPage;
@@ -50,15 +47,6 @@ const loadAsyncData = () => {
  */
 const onPageChange = (p) => {
     page.value = p;
-    loadAsyncData();
-};
-
-/*
- * Handle sort event
- */
-const onSort = (field, order) => {
-    sortField.value = field;
-    sortOrder.value = order;
     loadAsyncData();
 };
 
@@ -87,29 +75,19 @@ onMounted(() => {
         <input class="form-control" v-model="search" placeholder="Search..." />
 
         <o-table :data="data" :loading="loading" paginated backend-pagination :total="total" :per-page="perPage"
-            backend-sorting :default-sort-direction="defaultSortOrder" :default-sort="[sortField, sortOrder]"
             aria-next-label="Next page" aria-previous-label="Previous page" aria-page-label="Page"
-            aria-current-label="Current page" @page-change="onPageChange" @sort="onSort">
+            aria-current-label="Current page" @page-change="onPageChange">
             <o-table-column v-slot="props" field="original_title" label="Email" sortable>
-                <RouterLink :to="`/booking/${props.row._id}`"> {{ props.row.email }} </RouterLink>
+                {{ props.row.email }} 
             </o-table-column>
-            <o-table-column v-slot="props" field="NumTickets" label="NumTickets" numeric sortable>
-                <span class="tag" :class="type(props.row.vote_average)">
-                    {{ props.row.numTickets }}
-                </span>
+            <o-table-column v-slot="props" field="categories" label="categories" sortable>
+                {{ props.row.categories }}
             </o-table-column>
-            <o-table-column v-slot="props" field="Superhero" label="Superhero" numeric sortable>
-                {{ props.row.superhero }}
+            <o-table-column v-slot="props" field="budget" label="budget" numeric sortable>
+                {{ props.row.budget }}
             </o-table-column>
-            <o-table-column v-slot="props" field="Last_Modified_At" label="Last Modified At" sortable centered>
-                {{
-            props.row.modified_at
-                ? new Date(props.row.modified_at).toLocaleDateString()
-                : "unknown"
-        }}
-            </o-table-column>
-            <o-table-column v-slot="props" label="Payment" width="500">
-                {{ props.row.payment }}
+            <o-table-column v-slot="props" field="purpose" label="purpose" numeric sortable>
+                {{ props.row.purpose }}
             </o-table-column>
         </o-table>
     </section>
