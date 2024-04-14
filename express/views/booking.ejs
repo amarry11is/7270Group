@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Requested Booking</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+</head>
+
+<body>
+
+    <div class="row mb-3">
+        <label for="inputPassword3" class="col-sm-2 col-form-label">Email:</label>
+        <%= booking.email %>
+    </div>
+
+    <div class="row mb-3">
+        <label for="inputPassword3" class="col-sm-2 col-form-label">Number of Tickets:</label>
+        <%= booking.numTickets %>
+    </div>
+
+    <div class="row mb-3">
+        <label for="inputPassword3" class="col-sm-2 col-form-label">Team:</label>
+        <%= booking.team %>
+    </div>
+
+    <div class="row mb-3">
+        <label for="inputPassword3" class="col-sm-2 col-form-label">Superhero:</label>
+        <%= booking.superhero %>
+    </div>
+
+    <form id="deleteBtn" class="container" action="/booking/delete/<%= booking._id %>" method="post">
+        <button type="submit" class="btn btn-outline-success">Delete Booking</button>
+    </form>
+</body>
+
+</html>
