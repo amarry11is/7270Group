@@ -15,11 +15,6 @@ const perPage = ref(20);
 
 const loadAsyncData = () => {
     const params = [
-        // "api_key=bb6f51bef07465653c3e553d6ab161a8",
-        // "language=en-US",
-        // "include_adult=false",
-        // "include_video=false",
-        // `sort_by=${sortField.value}.${sortOrder.value}`,
         `page=${page.value}`,
         `email=${search.value}`,
     ].join("&");
@@ -30,7 +25,7 @@ const loadAsyncData = () => {
         .then((result) => {
             perPage.value = result.perPage;
             total.value = result.total;
-            data.value = result.bookings
+            data.value = result.Surveys
 
             loading.value = false;
         })
