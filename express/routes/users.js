@@ -12,13 +12,13 @@ const { connectToDB, ObjectId } = require('../utils/db');
 router.get('/with/bookings', async function (req, res) {
   const db = await connectToDB();
   try {
-    let result = await db.collection("bookings").aggregate([
+    let result = await db.collection("surveys").aggregate([
       {
         $lookup: {
-          from: "bookings",
+          from: "surveys",
           localField: "_id",
           foreignField: "manager",
-          as: "bookings"
+          as: "surveys"
         }
       },
       // remove the ip_address field
