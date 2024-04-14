@@ -30,7 +30,7 @@ router.get('/', async function (req, res) {
         let result = await db.collection("surveys").find(query).skip(skip).limit(perPage).toArray();
         let total = await db.collection("surveys").countDocuments(query);
 
-        res.json({ Surveys: result, total: total, page: page, perPage: perPage });
+        res.json({ surveys: result, total: total, page: page, perPage: perPage });
     } catch (err) {
         res.status(400).json({ message: err.message });
     }

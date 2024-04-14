@@ -30,7 +30,7 @@ const loadAsyncData = () => {
         .then((result) => {
             perPage.value = result.perPage;
             total.value = result.total;
-            data.value = result.bookings
+            data.value = result.surveys
 
             loading.value = false;
         })
