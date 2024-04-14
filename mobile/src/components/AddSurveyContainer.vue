@@ -137,7 +137,6 @@ onMounted(async () => {
                 <apexchart type="donut" :options="options" :series="series" />
                 <apexchart type="polarArea" :options="options" :series="series" />
                 <apexchart type="pie" :options="options" :series="series" />
-                <!-- <xyChart :data="statJson.value"></xyChart> -->
             </div>
 
         </div>

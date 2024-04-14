@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const { connectToDB, ObjectId } = require('../utils/db');
+const { generateToken } = require('../utils/auth');
 
 module.exports = router;
 
@@ -58,19 +59,47 @@ router.get('/stats', async function (req, res) {
     const db = await connectToDB();
     try {
         let pipelines = [];
-    
+
         if (req.query.purpose) {
             pipelines.push({ $match: { purpose: req.query.purpose } });
         }
-    
+
         pipelines = pipelines.concat([
             // non null categories
             { $match: { purpose: { $ne: null } } },
             { $group: { _id: "$purpose", total: { $sum: 1 } } }
         ]);
-    
+
         let result = await db.collection("surveys").aggregate(pipelines).toArray();
         res.json(result);
+    } catch (err) {
+        res.status(400).json({ message: err.message });
+    } finally {
+        await db.client.close();
+    }
+});
+
+router.post('/login', async function (req, res, next) {
+    const db = await connectToDB();
+    try {
+        // check if the user exists
+        var user = await db.collection("users").findOne({ email: req.body.email });
+        if (!user) {
+            res.status(401).json({ message: 'User not found' });
+            return;
+        }
+
+        // res.json(user);
+
+        delete user.password;
+        delete user.ip_address;
+
+        // generate a JWT token
+        const token = generateToken(user);
+
+        // return the token
+        res.json({ token: token });
+
     } catch (err) {
         res.status(400).json({ message: err.message });
     } finally {
