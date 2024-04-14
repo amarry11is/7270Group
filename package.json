@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@amcharts/amcharts5": "^5.9.1",
     "@mdi/font": "^7.4.47",
     "@oruga-ui/oruga-next": "^0.8.6",
     "@oruga-ui/theme-bootstrap": "^0.5.4",
