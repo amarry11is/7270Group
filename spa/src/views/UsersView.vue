@@ -5,18 +5,17 @@ import { jwtDecode } from "jwt-decode";
 const users = ref([]);
 const name = ref("");
 
-// decode jwt token
-const decoded = jwtDecode(token);
-console.log(decoded);
-name.value = `${decoded.first_name} ${decoded.last_name}`;
-
 const loadAsyncData = async () => {
     try {
         // Get the token from local storage    
         const token = localStorage.getItem('token');
+        // decode jwt token
+        const decoded = jwtDecode(token);
+        console.log(decoded);
+        name.value = `${decoded.first_name} ${decoded.last_name}`;
 
         // Send a request to the endpoint with the token in the Authorization header
-        var response = await fetch("/api/users/with/bookings", {
+        var response = await fetch("/api/users/with/surveys", {
             headers: {
                 Authorization: `Bearer ${token}`,
             }
