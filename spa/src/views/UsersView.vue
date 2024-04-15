@@ -41,15 +41,62 @@ const logout = function() {
   location.reload()
 }
 
+// delete user
+const deleteUser = async (userId) => {
+    try {
+        const token = localStorage.getItem('token');
+    
+        const response = await fetch(`/api/users/${userId}`, {
+            method: 'DELETE',
+            headers: {
+                Authorization: `Bearer ${token}`,
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to delete the user.");
+        }
+
+        users.value = users.value.filter(user => user._id !== userId);
+        
+        alert("User deleted successfully");
+    } catch (error) {
+        console.error(error);
+        alert("Failed to delete user");
+    }
+};
+
 onMounted(() => {
     loadAsyncData();
 });
 </script>
 
 <template>
-    <button type="button" class="btn btn-primary my-4" @click="logout">Log Out</button>
-    {{ name }}
-    <div v-for="user in users" :key="user._id">
-        {{ user }}
+    <div class="container mt-5">
+        <button type="button" class="btn btn-primary my-4" @click="logout">Log Out</button>
+        <h2>Welcome back, {{ name }}</h2>
+        
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">First Name</th>
+                    <th scope="col">Last Name</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="(user, index) in users" :key="user._id">
+                    <th scope="row">{{ index + 1 }}</th>
+                    <td>{{ user.first_name }}</td>
+                    <td>{{ user.last_name }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>
+                        <button class="btn btn-danger" @click="deleteUser(user._id)">Delete</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 </template>

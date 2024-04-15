@@ -33,5 +33,22 @@ router.get('/with/surveys', async function (req, res) {
   }
 });
 
+router.delete('/:userId', async (req, res) => {
+  const db = await connectToDB();
+  try {
+    const userId = req.params.userId;
+    
+    const result = await db.collection("users").deleteOne({_id: new ObjectId(userId)});
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.status(200).json({ message: "User successfully deleted" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: err.message });
+  } finally {
+    await db.client.close();
+  }
+});
 
 module.exports = router;
