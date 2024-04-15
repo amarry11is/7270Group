@@ -1,4 +1,17 @@
 <template>
+  <div>
+    <ion-card>
+      <ion-row>
+        <ion-col size="9">
+          <ion-input type="text" placeholder="Enter search keyword" v-model="inputText"
+            @ionChange="handleInputChange"></ion-input>
+        </ion-col>
+        <ion-col size="3">
+          <ion-button @click="search" expand="block">Search</ion-button>
+        </ion-col>
+      </ion-row>
+    </ion-card>
+  </div>
   <ion-card v-for="item in items" :key="item.id">
     <ion-card-header class="col">
       <ion-card-title>{{ item.name }}</ion-card-title>
@@ -11,7 +24,7 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import { IonCard, IonCardHeader, IonCardSubtitle, IonCardTitle, IonButton } from '@ionic/vue';
+import { IonCard, IonRow, IonCol, IonInput, IonCardHeader, IonCardSubtitle, IonCardTitle, IonButton } from '@ionic/vue';
 import { useRouter } from 'vue-router';
 
 const delete_survey = async function () {
