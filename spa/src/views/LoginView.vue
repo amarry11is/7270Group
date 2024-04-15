@@ -1,12 +1,18 @@
 <script setup>
 // imports
 import { ref } from 'vue';
+import { useRouter } from 'vue-router'
+
+
 
 // credentials
 const credentials = ref({
     email: '',
     password: ''
 });
+
+// useRouter hook
+const router = useRouter();
 
 // methods
 const login = async () => {
@@ -30,6 +36,10 @@ const login = async () => {
         // save token to local storage
         localStorage.setItem('token', data.token);
         alert("Login Successfully");
+
+        // Redirect to UsersView using router
+        router.push({ name: 'users' });
+
     } catch (error) {
         alert(error);
     }
@@ -52,7 +62,7 @@ const login = async () => {
                 <input type="checkbox" class="form-check-input" id="exampleCheck1">
                 <label class="form-check-label" for="exampleCheck1">Check me out</label>
             </div>
-            <button type="submit" class="btn btn-primary">Submit</button>
+            <button type="button" @click="login" class="btn btn-primary">Submit</button>
         </form>
     </main>
 </template>
