@@ -139,8 +139,8 @@ router.post('/register', async function (req, res, next) {
         }
 
         const newUser = {
-            firstName: req.body.firstName,
-            lastName: req.body.lastName,
+            first_name: req.body.firstName,
+            last_name: req.body.lastName,
             email: req.body.email,
             password: req.body.password,
             gender: req.body.gender
