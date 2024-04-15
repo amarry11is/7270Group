@@ -1,9 +1,19 @@
 <script setup>
-import { onMounted, ref } from "vue";
+import { onMounted, ref, computed } from "vue";
 import { jwtDecode } from "jwt-decode";
 
 const users = ref([]);
 const name = ref("");
+
+const searchQuery = ref("");
+
+const filteredUsers = computed(() => {
+    return users.value.filter(user => {
+        return user.first_name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+               user.last_name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+               user.email.toLowerCase().includes(searchQuery.value.toLowerCase());
+    });
+});
 
 const loadAsyncData = async () => {
     try {
@@ -36,16 +46,18 @@ const loadAsyncData = async () => {
     }
 };
 
-const logout = function() {
-  localStorage.removeItem('token');
-  location.reload()
+const logout = function () {
+    localStorage.removeItem('token');
+    location.reload()
 }
+
+
 
 // delete user
 const deleteUser = async (userId) => {
     try {
         const token = localStorage.getItem('token');
-    
+
         const response = await fetch(`/api/users/${userId}`, {
             method: 'DELETE',
             headers: {
@@ -58,7 +70,7 @@ const deleteUser = async (userId) => {
         }
 
         users.value = users.value.filter(user => user._id !== userId);
-        
+
         alert("User deleted successfully");
     } catch (error) {
         console.error(error);
@@ -66,16 +78,24 @@ const deleteUser = async (userId) => {
     }
 };
 
+
 onMounted(() => {
     loadAsyncData();
 });
 </script>
 
 <template>
+
     <div class="container mt-5">
+        <!-- search users -->
+        <div class="input-group mb-3">
+            <input type="text" class="form-control" placeholder="Search users" v-model="searchQuery">
+            <button class="btn btn-outline-secondary" type="button" @click="loadAsyncData">Search</button>
+        </div>
+
         <button type="button" class="btn btn-primary my-4" @click="logout">Log Out</button>
         <h2>Welcome back, {{ name }}</h2>
-        
+
         <table class="table">
             <thead>
                 <tr>
@@ -87,7 +107,7 @@ onMounted(() => {
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="(user, index) in users" :key="user._id">
+                <tr v-for="(user, index) in filteredUsers" :key="user._id">
                     <th scope="row">{{ index + 1 }}</th>
                     <td>{{ user.first_name }}</td>
                     <td>{{ user.last_name }}</td>
