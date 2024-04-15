@@ -1,6 +1,9 @@
 <script setup>
 // imports
 import { ref } from 'vue';
+import { useRouter } from 'vue-router'
+
+
 
 // credentials
 const credentials = ref({
@@ -8,10 +11,16 @@ const credentials = ref({
     password: ''
 });
 
+// useRouter hook
+const router = useRouter();
+
 // methods
 const login = async () => {
     try {
-        alert("Login Successfully");
+
+        // Redirect to UsersView using router
+        router.push('/tabs/')
+
     } catch (error) {
         alert(error);
     }
@@ -34,7 +43,7 @@ const login = async () => {
                 <input type="checkbox" class="form-check-input" id="exampleCheck1">
                 <label class="form-check-label" for="exampleCheck1">Check me out</label>
             </div>
-            <button type="submit" class="btn btn-primary">Submit</button>
+            <button type="button" @click="login" class="btn btn-primary">Submit</button>
         </form>
     </main>
 </template>
