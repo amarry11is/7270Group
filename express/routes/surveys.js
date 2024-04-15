@@ -116,8 +116,50 @@ router.post('/login', async function (req, res, next) {
     }
 });
 
+router.post('/register', async function (req, res, next) {
+    const db = await connectToDB();
+    try {
+        const emailRegex = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i;
 
+        if (!req.body.email || !req.body.password) {
+            res.status(400).json({ message: 'Email and password are required' });
+            return;
+        }
 
+        if (!emailRegex.test(req.body.email)) {
+            res.status(400).json({ message: 'Invalid email format' });
+            return;
+        }
+
+        // Check if user already exists
+        var existingUser = await db.collection("users").findOne({ email: req.body.email });
+        if (existingUser) {
+            res.status(409).json({ message: 'User already exists' });
+            return;
+        }
+
+        const newUser = {
+            firstName: req.body.firstName,
+            lastName: req.body.lastName,
+            email: req.body.email,
+            password: req.body.password,
+            gender: req.body.gender
+            
+        };
+
+        const result = await db.collection("users").insertOne(newUser);
+        if (!result.acknowledged) {
+            throw new Error('User registration failed');
+        }
+
+        res.status(201).json({ message: 'User registered successfully' });
+
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    } finally {
+        await db.client.close();
+    }
+});
 
 
 
