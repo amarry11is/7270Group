@@ -133,12 +133,6 @@ onMounted(async () => {
                 </div>
                 <button type="submit" id="submit" class="btn btn-outline-success">Submit</button>
             </form>
-            <div id="charts" class="col">
-                <apexchart type="donut" :options="options" :series="series" />
-                <apexchart type="polarArea" :options="options" :series="series" />
-                <apexchart type="pie" :options="options" :series="series" />
-            </div>
-
         </div>
 
     </main>

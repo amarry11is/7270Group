@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from '@ionic/vue-router';
 import TabsPage from '../views/TabsPage.vue'
+import LoginPage from '../views/LoginPage.vue'
 
 const routes = [
   {
@@ -31,6 +32,10 @@ const routes = [
         component: () => import('@/views/ItemPage.vue')
     }
     ]
+  },
+  {
+    path: '/login',
+    component: LoginPage,
   }
 ]
 
