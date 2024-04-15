@@ -85,30 +85,41 @@ router.get('/stats', async function (req, res) {
 router.post('/login', async function (req, res, next) {
     const db = await connectToDB();
     try {
-        // check if the user exists
+        const emailRegex = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i;
+
+        if (!req.body.email || !req.body.password) {
+            res.status(400).json({ message: 'Email and password are required' });
+            return;
+        }
+
+        if (!emailRegex.test(req.body.email)) {
+            res.status(400).json({ message: 'Invalid email format' });
+            return;
+        }
+
         var user = await db.collection("users").findOne({ email: req.body.email });
         if (!user) {
             res.status(401).json({ message: 'User not found' });
             return;
         }
 
-        // res.json(user);
-
         delete user.password;
         delete user.ip_address;
 
-        // generate a JWT token
         const token = generateToken(user);
-
-        // return the token
-        res.status(200).json({ token: token });
+        res.status(200).json({ token });
 
     } catch (err) {
-        res.status(400).json({ message: err.message });
+        res.status(500).json({ message: err.message });
     } finally {
         await db.client.close();
     }
 });
+
+
+
+
+
 
 var passport = require('passport');
 
