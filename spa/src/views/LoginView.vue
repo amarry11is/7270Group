@@ -37,7 +37,8 @@ const login = async () => {
 
         localStorage.setItem('token', data.token);
         message.value = "Login successful. Redirecting...";
-        setTimeout(() => router.push({ name: 'users' }), 2000);
+        setTimeout(() => router.push({ name: 'survey-create' }), 2000);
+
     } catch (error) {
         message.value = error.message;
     }

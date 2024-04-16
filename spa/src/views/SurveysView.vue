@@ -98,6 +98,10 @@ onMounted(() => {
     loadAsyncData();
 });
 
+onMounted(() => {
+    document.title = "Surveys Management";
+});
+
 </script>
 
 <template>
