@@ -37,6 +37,8 @@ const modify = async () => {
         }
 
         registrationMessage.value = "Modify success.";
+
+        route.push({ name: 'view-surveys' });
     } catch (error) {
         registrationMessage.value = error.message;
     }
