@@ -130,24 +130,21 @@ router.delete('/:id', async function (req, res) {
     }
 });
 
-// Get the total number of Surveys per superhero
-router.get('/stats', async function (req, res) {
+// Get purpose
+router.get('/stats/purpose', async function (req, res) {
     const db = await connectToDB();
     try {
         let pipelines = [];
 
-
         if (req.query.purpose) {
             pipelines.push({ $match: { purpose: req.query.purpose } });
         }
-
 
         pipelines = pipelines.concat([
             // non null categories
             { $match: { purpose: { $ne: null } } },
             { $group: { _id: "$purpose", total: { $sum: 1 } } }
         ]);
-
 
         let result = await db.collection("surveys").aggregate(pipelines).toArray();
         res.json(result);
@@ -157,6 +154,32 @@ router.get('/stats', async function (req, res) {
         await db.client.close();
     }
 });
+
+// Get budget
+router.get('/stats/budget', async function (req, res) {
+    const db = await connectToDB();
+    try {
+        let pipelines = [];
+
+        if (req.query.purpose) {
+            pipelines.push({ $match: { purpose: req.query.purpose } });
+        }
+
+        pipelines = pipelines.concat([
+            // non null categories
+            { $match: { purpose: { $ne: null } } },
+            { $group: { _id: "$budget", total: { $sum: 1 } } }
+        ]);
+
+        let result = await db.collection("surveys").aggregate(pipelines).toArray();
+        res.json(result);
+    } catch (err) {
+        res.status(400).json({ message: err.message });
+    } finally {
+        await db.client.close();
+    }
+});
+
 
 router.post('/login', async function (req, res, next) {
     const db = await connectToDB();
