@@ -38,6 +38,41 @@ const loadAsyncData = () => {
 };
 
 /*
+ * Handle modify button click event
+ */
+const handleModifyBtnClick = async (survey_id) => {
+    // alert(survey_id);
+    
+};
+
+/*
+ * Handle delete button click event
+ */
+const handleDeleteBtnClick = async (survey_id) => {
+    // alert(survey_id);
+    try {
+        const token = localStorage.getItem('token');
+
+        const response = await fetch(`/api/surveys/${survey_id}`, {
+            method: 'DELETE',
+            headers: {
+                Authorization: `Bearer ${token}`,
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to delete the Survey.");
+        }
+
+        alert("Survey deleted successfully");
+        loadAsyncData();
+    } catch (error) {
+        console.error(error);
+        alert("Failed to delete Survey");
+    }
+};
+
+/*
  * Handle page-change event
  */
 const onPageChange = (p) => {
@@ -72,8 +107,8 @@ onMounted(() => {
         <o-table :data="data" :loading="loading" paginated backend-pagination :total="total" :per-page="perPage"
             aria-next-label="Next page" aria-previous-label="Previous page" aria-page-label="Page"
             aria-current-label="Current page" @page-change="onPageChange">
-            <o-table-column v-slot="props" field="original_title" label="Email" sortable>
-                {{ props.row.email }} 
+            <o-table-column v-slot="props" field="original_title" label="email" sortable>
+                {{ props.row.email }}
             </o-table-column>
             <o-table-column v-slot="props" field="categories" label="categories" sortable>
                 {{ props.row.categories }}
@@ -83,6 +118,12 @@ onMounted(() => {
             </o-table-column>
             <o-table-column v-slot="props" field="purpose" label="purpose" numeric sortable>
                 {{ props.row.purpose }}
+            </o-table-column>
+            <o-table-column v-slot="props">
+                <button class="btn btn-primary" @click="handleModifyBtnClick(props.row._id)">Modify</button>
+            </o-table-column>
+            <o-table-column v-slot="props">
+                <button class="btn btn-danger" @click="handleDeleteBtnClick(props.row._id)">Delete</button>
             </o-table-column>
         </o-table>
     </section>
