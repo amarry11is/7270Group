@@ -34,7 +34,7 @@ const submitSurvey = async function () {
     var surveyJson = await surveyResponse.json();
     // console.log(surveyJson);
     // show the survey result charts
-    // showStat();
+    showStat();
 };
 
 const showStat = async function () {
