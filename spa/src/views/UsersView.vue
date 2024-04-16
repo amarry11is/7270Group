@@ -57,6 +57,7 @@ const logout = function () {
  * Handle modify button click event
  */
  const handleModifyBtnClick = async (user_id) => {
+    localStorage.setItem('user-id', user_id);
     router.push({ name: 'user-update', params: { id: user_id } });
 };
 
