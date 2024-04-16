@@ -19,8 +19,8 @@ const submitSurvey = async function () {
     var url = '/api/surveys';
     var method = 'POST';
 
-    if (route.name == 'update-survey') {
-        url = url + '/' + survey.value._id;
+    if (route.name == 'survey-update') {
+        url = url + '/' + survey.value._id + '/update';
         method = 'PUT';
     }
 

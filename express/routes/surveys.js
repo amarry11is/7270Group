@@ -54,19 +54,13 @@ router.post('/', async function (req, res) {
     }
 });
 
-// Update a single survey
-router.put('/:id', async function (req, res) {
+/* Display a single survey */
+router.get('/:id', async function (req, res) {
     const db = await connectToDB();
     try {
-        // req.body.numTickets = parseInt(req.body.numTickets);
-        // req.body.terms = req.body.terms ? true : false;
-        // req.body.superhero = req.body.superhero || "";
-        req.body.modified_at = new Date();
-
-        let result = await db.collection("surveys").updateOne({ _id: new ObjectId(req.params.id) }, { $set: req.body });
-
-        if (result.modifiedCount > 0) {
-            res.status(200).json({ message: "Survey updated" });
+        let result = await db.collection("surveys").findOne({ _id: new ObjectId(req.params.id) });
+        if (result) {
+            res.status(200).json(result);
         } else {
             res.status(404).json({ message: "Survey not found" });
         }
@@ -76,6 +70,47 @@ router.put('/:id', async function (req, res) {
         await db.client.close();
     }
 });
+
+
+router.put('/:id/update', async function (req, res) {
+    const db = await connectToDB();
+    if (!ObjectId.isValid(req.params.id)) {
+        res.status(400).json({ message: "Invalid ID format" });
+        return;
+    }
+
+    // Remove _id from req.body if present
+    delete req.body._id;
+
+    try {
+        if (Object.keys(req.body).length === 0) {
+            res.status(400).json({ message: "Request body is empty or improperly formatted" });
+            return;
+        }
+
+        let result = await db.collection("surveys").updateOne(
+            { _id: new ObjectId(req.params.id) },
+            { $set: req.body }
+        );
+
+        if (result.modifiedCount > 0) {
+            res.status(200).json({ message: "Survey updated" });
+        } else {
+            if (result.matchedCount === 0) {
+                res.status(404).json({ message: "Survey not found" });
+            } else {
+                res.status(200).json({ message: "No changes made to the survey" });
+            }
+        }
+    } catch (err) {
+        console.error("Update Error:", err);
+        res.status(400).json({ message: err.message });
+    } finally {
+        await db.client.close();
+    }
+});
+
+
 
 // Delete a single survey
 router.delete('/:id', async function (req, res) {
@@ -208,7 +243,7 @@ router.post('/register', async function (req, res, next) {
             email: req.body.email,
             password: req.body.password,
             gender: req.body.gender
-            
+
         };
 
         const result = await db.collection("users").insertOne(newUser);

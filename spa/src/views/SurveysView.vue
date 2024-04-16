@@ -1,5 +1,6 @@
 <script setup>
 import { ref, onMounted, watch } from "vue" // add watch
+import { useRouter } from 'vue-router';
 
 const search = ref("");
 
@@ -7,6 +8,7 @@ watch(() => search.value, () => {
     loadAsyncData();
 });
 
+const router = useRouter();
 const data = ref([]);
 const total = ref(0);
 const loading = ref(false);
@@ -41,15 +43,13 @@ const loadAsyncData = () => {
  * Handle modify button click event
  */
 const handleModifyBtnClick = async (survey_id) => {
-    // alert(survey_id);
-    
+    router.push({ name: 'survey-update', params: { id: survey_id } });
 };
 
 /*
  * Handle delete button click event
  */
 const handleDeleteBtnClick = async (survey_id) => {
-    // alert(survey_id);
     try {
         const token = localStorage.getItem('token');
 
