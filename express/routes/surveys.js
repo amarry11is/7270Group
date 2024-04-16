@@ -71,24 +71,46 @@ router.get('/:id', async function (req, res) {
     }
 });
 
-// Update a single survey
+
 router.put('/:id/update', async function (req, res) {
     const db = await connectToDB();
-    try {
+    if (!ObjectId.isValid(req.params.id)) {
+        res.status(400).json({ message: "Invalid ID format" });
+        return;
+    }
 
-        let result = await db.collection("surveys").updateOne({ _id: new ObjectId(req.params.id) }, { $set: req.body });
+    // Remove _id from req.body if present
+    delete req.body._id;
+
+    try {
+        if (Object.keys(req.body).length === 0) {
+            res.status(400).json({ message: "Request body is empty or improperly formatted" });
+            return;
+        }
+
+        let result = await db.collection("surveys").updateOne(
+            { _id: new ObjectId(req.params.id) },
+            { $set: req.body }
+        );
 
         if (result.modifiedCount > 0) {
             res.status(200).json({ message: "Survey updated" });
         } else {
-            res.status(404).json({ message: "Survey not found" });
+            if (result.matchedCount === 0) {
+                res.status(404).json({ message: "Survey not found" });
+            } else {
+                res.status(200).json({ message: "No changes made to the survey" });
+            }
         }
     } catch (err) {
+        console.error("Update Error:", err);
         res.status(400).json({ message: err.message });
     } finally {
         await db.client.close();
     }
 });
+
+
 
 // Delete a single survey
 router.delete('/:id', async function (req, res) {
