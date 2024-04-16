@@ -1,7 +1,9 @@
 <script setup>
 import { onMounted, ref, computed } from "vue";
 import { jwtDecode } from "jwt-decode";
+import { useRouter } from 'vue-router';
 
+const router = useRouter();
 const users = ref([]);
 const name = ref("");
 
@@ -51,7 +53,12 @@ const logout = function () {
     location.reload()
 }
 
-
+/*
+ * Handle modify button click event
+ */
+ const handleModifyBtnClick = async (user_id) => {
+    router.push({ name: 'user-update', params: { id: user_id } });
+};
 
 // delete user
 const deleteUser = async (userId) => {
@@ -116,6 +123,9 @@ onMounted(() => {
                     <td>{{ user.first_name }}</td>
                     <td>{{ user.last_name }}</td>
                     <td>{{ user.email }}</td>
+                    <td>
+                        <button class="btn btn-primary" @click="handleModifyBtnClick(user._id)">Modify</button>
+                    </td>
                     <td>
                         <button class="btn btn-danger" @click="deleteUser(user._id)">Delete</button>
                     </td>
