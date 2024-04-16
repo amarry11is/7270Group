@@ -1,0 +1,8 @@
+{
+    "appService.zipIgnorePattern": [
+        "node_modules{,/**}",
+        ".vscode{,/**}"
+    ],
+    "appService.defaultWebAppToDeploy": "/subscriptions/aaad5079-4212-498d-9283-ecb426778a61/resourceGroups/SurveyBackend_group/providers/Microsoft.Web/sites/SurveyBackend",
+    "appService.deploySubpath": "."
+}
