@@ -17,8 +17,8 @@ const submitSurvey = async function () {
     var url = '/api/surveys';
     var method = 'POST';
 
-    if (route.name == 'update-survey') {
-        url = url + '/' + survey.value._id;
+    if (route.name == 'survey-update') {
+        url = url + '/' + survey.value._id + '/update';
         method = 'PUT';
     }
 
@@ -32,9 +32,9 @@ const submitSurvey = async function () {
     });
     // convert the response to json
     var surveyJson = await surveyResponse.json();
-    console.log(surveyJson);
+    // console.log(surveyJson);
     // show the survey result charts
-    showStat();
+    // showStat();
 };
 
 const showStat = async function () {

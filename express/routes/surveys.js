@@ -54,14 +54,27 @@ router.post('/', async function (req, res) {
     }
 });
 
-// Update a single survey
-router.put('/:id', async function (req, res) {
+/* Display a single survey */
+router.get('/:id', async function (req, res) {
     const db = await connectToDB();
     try {
-        // req.body.numTickets = parseInt(req.body.numTickets);
-        // req.body.terms = req.body.terms ? true : false;
-        // req.body.superhero = req.body.superhero || "";
-        req.body.modified_at = new Date();
+        let result = await db.collection("surveys").findOne({ _id: new ObjectId(req.params.id) });
+        if (result) {
+            res.status(200).json(result);
+        } else {
+            res.status(404).json({ message: "Survey not found" });
+        }
+    } catch (err) {
+        res.status(400).json({ message: err.message });
+    } finally {
+        await db.client.close();
+    }
+});
+
+// Update a single survey
+router.put('/:id/update', async function (req, res) {
+    const db = await connectToDB();
+    try {
 
         let result = await db.collection("surveys").updateOne({ _id: new ObjectId(req.params.id) }, { $set: req.body });
 
@@ -185,7 +198,7 @@ router.post('/register', async function (req, res, next) {
             email: req.body.email,
             password: req.body.password,
             gender: req.body.gender
-            
+
         };
 
         const result = await db.collection("users").insertOne(newUser);
