@@ -82,6 +82,10 @@ const deleteUser = async (userId) => {
 onMounted(() => {
     loadAsyncData();
 });
+
+onMounted(() => {
+    document.title = "Users Management";
+});
 </script>
 
 <template>

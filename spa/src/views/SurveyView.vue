@@ -136,8 +136,8 @@ onMounted(async () => {
             </form>
             <div id="charts" class="col">
                 <apexchart type="donut" :options="options" :series="series" />
-                <apexchart type="polarArea" :options="options" :series="series" />
-                <apexchart type="pie" :options="options" :series="series" />
+                <!-- <apexchart type="polarArea" :options="options" :series="series" /> -->
+                <!-- <apexchart type="pie" :options="options" :series="series" /> -->
                 <!-- <xyChart :data="statJson.value"></xyChart> -->
             </div>
 
@@ -149,6 +149,10 @@ onMounted(async () => {
             <p>Purpose: {{ survey.purpose }}</p>
             <p>Terms and Conditions: {{ survey.terms }}</p>
             <p>Last Modified: {{ differenceInDays(new Date(), new Date(survey.modified_at)) }} ago.</p>
+        </div>
+        <div class="mt-4">
+            <router-link to="/surveys" class="btn btn-primary">Surveys Management</router-link>
+            <router-link to="/users" class="btn btn-secondary ms-2">Users Management</router-link>
         </div>
     </main>
 </template>
