@@ -31,15 +31,13 @@ const modify = async () => {
             },
             body: JSON.stringify(modifyData.value)
         });
-
         const data = await response.json();
         if (!response.ok) {
             throw new Error(data.message);
         }
-
         registrationMessage.value = "Modify success.";
 
-        route.push({ name: 'view-surveys' });
+        route.push({ name: 'users' });
     } catch (error) {
         registrationMessage.value = error.message;
     }
@@ -62,8 +60,6 @@ const getUser = async function (id) {
         const data = await response.json();
         
         modifyData.value = data;
-
-        registrationMessage.value = "Modify success.";
     } catch (error) {
         registrationMessage.value = error.message;
     }
