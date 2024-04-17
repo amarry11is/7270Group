@@ -50,7 +50,7 @@ const loadAsyncData = async () => {
 
 const logout = function () {
     localStorage.removeItem('token');
-    location.reload()
+    router.push({ name: 'login' });
 }
 
 /*
