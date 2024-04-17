@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute } from "vue-router";
+import { differenceInDays } from 'date-fns'
 
 const route = useRoute();
 
@@ -12,12 +13,13 @@ const survey = ref({
     terms: false
 });
 
-const submitSurvey = async function () {
-    var url = '/api/surveys';
-    var method = 'POST';
+const isSurveySubmitted = ref(false);
 
-    if (route.name == 'update-survey') {
-        url = url + '/' + survey.value._id;
+const submitSurvey = async function () {
+    var url = 'https://nice-water-05b1c7800.5.azurestaticapps.net/surveys';
+    var method = 'POST';
+    if (props.mode == 'survey-update') {
+        url = url + '/' + survey.value._id + '/update';
         method = 'PUT';
     }
 
@@ -29,25 +31,7 @@ const submitSurvey = async function () {
         },
         body: JSON.stringify(survey.value)
     });
-    // convert the response to json
-    var surveyJson = await surveyResponse.json();
-    console.log(surveyJson);
-    // show the survey result charts
-    showStat();
-};
-
-const showStat = async function () {
-    var url = '/api/surveys/stats';
-
-    var response = await fetch(url);
-    var json = await response.json();
-    console.log(json);
-    statJson.value = json;
-    options.value = {
-        labels: json.map((item) => item._id),
-        title: { text: props.purpose || "All Purposes" }
-    };
-    series.value = json.map((item) => item.total);
+    console.log(surveyResponse)
 };
 
 // set the budgets
@@ -68,12 +52,14 @@ const getSurvey = async function () {
 }
 
 const props = defineProps({
-    categories: String,
+    mode: String,
 });
 
-const options = ref({});
-const series = ref([]);
-const statJson = ref([]);
+const optionsPurpose = ref({});
+const seriesPurpose = ref([]);
+
+const optionsBudget = ref({});
+const seriesBudget = ref([]);
 
 onMounted(async () => {
     // if there is an id in the route
@@ -84,56 +70,92 @@ onMounted(async () => {
 </script>
 
 <template>
-    <main>
-        <div class="row" id="container" style="width:1000px">
-            <form class="col my-5" @submit.prevent="submitSurvey" v-if="route.name != 'view-survey'">
-                <fieldset class="row mb-3">
-                    <legend class="col col-form-label pt-0">Categories</legend>
-                    <div class="col col-sm-20">
+    <div class="container py-5">
+        <h1 class="mb-4 text-center">Computer Choice Survey</h1>
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <form @submit.prevent="submitSurvey" v-if="route.name != 'view-survey'"
+                    class="mt-3 mt-md-0 form-styling">
+                    <fieldset class="mb-3">
+                        <legend class="form-legend">Preference</legend>
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" name="categories" id="PC" value="PC" checked>
-                            <label class="form-check-label" for="PC">
-                                PC
-                            </label>
+                            <input class="form-check-input" type="radio" name="categories" id="PC" value="PC"
+                                v-model="survey.categories">
+                            <label class="form-check-label" for="PC">PC</label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" name="categories" id="Laptop" value="Laptop">
-                            <label class="form-check-label" for="Laptop">
-                                Laptop
-                            </label>
+                            <input class="form-check-input" type="radio" name="categories" id="Laptop" value="Laptop"
+                                v-model="survey.categories">
+                            <label class="form-check-label" for="Laptop">Laptop</label>
                         </div>
+                    </fieldset>
+
+                    <div class="mb-3">
+                        <label for="budgetSelect" class="form-label form-legend">Budget</label>
+                        <select class="form-select" id="budgetSelect" v-model="survey.budget">
+                            <option v-for="budget in budgets" :key="budget" :value="budget">{{ budget }}</option>
+                        </select>
                     </div>
-                </fieldset>
 
-                <div class="row mb-3">
-                    <label class="col-sm-2 col-form-label">Budget</label>
-                    <select class="form-select" aria-label="Default select example" v-model="survey.budget">
-                        <option v-for="budget in budgets" :key="budget" :value="budget"> {{ budget }}
-                        </option>
-                    </select>
-                </div>
-
-                <div class="row mb-3">
-                    <label class="col-sm-2 col-form-label">Purpose</label>
-                    <select class="form-select" aria-label="Default select example" v-model="survey.purpose">
-                        <option v-for="purpose in purposes" :key="purpose" :value="purpose"> {{ purpose }}
-                        </option>
-                    </select>
-                </div>
-
-                <div class="row mb-3">
-                    <div class="col-sm-10 offset-sm-2">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="terms" id="gridCheck1">
-                            <label class="form-check-label" for="gridCheck1">
-                                Agree to Terms and Conditions
-                            </label>
-                        </div>
+                    <div class="mb-3">
+                        <label for="purposeSelect" class="form-label form-legend">Purpose</label>
+                        <select class="form-select" id="purposeSelect" v-model="survey.purpose">
+                            <option v-for="purpose in purposes" :key="purpose" :value="purpose">{{ purpose }}</option>
+                        </select>
                     </div>
+
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="termsCheck" v-model="survey.terms">
+                        <label class="form-check-label" for="termsCheck">Agree to Terms and Conditions</label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+                <div v-if="isSurveySubmitted" class="stats-display">
+                    <apexchart type="donut" :options="optionsPurpose" :series="seriesPurpose" class="mb-4"></apexchart>
+                    <apexchart type="bar" :options="optionsBudget" :series="seriesBudget"></apexchart>
                 </div>
-                <button type="submit" id="submit" class="btn btn-outline-success">Submit</button>
-            </form>
+            </div>
         </div>
-
-    </main>
+        <div v-if="route.name == 'view-survey'" class="survey-details">
+            <h2>{{ survey.email }}</h2>
+            <p>Categories: {{ survey.categories }}</p>
+            <p>Budget: {{ survey.budget }}</p>
+            <p>Purpose: {{ survey.purpose }}</p>
+            <p>Terms and Conditions: {{ survey.terms ? 'Accepted' : 'Not Accepted' }}</p>
+            <p>Last Modified: {{ differenceInDays(new Date(), new Date(survey.modified_at)) }} days ago.</p>
+        </div>
+    </div>
 </template>
+
+<style scoped>
+.form-legend {
+    font-size: 1rem;
+    /* Adjust the font size to your liking */
+    font-weight: bold;
+}
+
+.form-styling {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.stats-display,
+.survey-details {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+}
+
+.navigation-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+/* Further CSS styles to beautify the page */
+</style>

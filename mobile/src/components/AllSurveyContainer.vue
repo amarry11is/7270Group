@@ -1,84 +1,122 @@
-<template>
-  <div>
-    <ion-card>
-      <ion-row>
-        <ion-col size="9">
-          <ion-input type="text" placeholder="Enter search keyword" v-model="inputText"
-            @ionChange="handleInputChange"></ion-input>
-        </ion-col>
-        <ion-col size="3">
-          <ion-button @click="search" expand="block">Search</ion-button>
-        </ion-col>
-      </ion-row>
-    </ion-card>
-  </div>
-  <ion-card v-for="item in items" :key="item.id">
-    <ion-card-header class="col">
-      <ion-card-title>{{ item.name }}</ion-card-title>
-      <ion-card-subtitle>$ {{ item.price }}</ion-card-subtitle>
-    </ion-card-header>
-    <ion-button @click="delete_survey()">Delete</ion-button>
-    <ion-button @click="modify_survey()">Modify</ion-button>
-  </ion-card>
-</template>
-
 <script setup>
-import { ref, onMounted } from "vue";
-import { IonCard, IonRow, IonCol, IonInput, IonCardHeader, IonCardSubtitle, IonCardTitle, IonButton } from '@ionic/vue';
+import { ref, onMounted, watch } from "vue" // add watch
 import { useRouter } from 'vue-router';
 
-const delete_survey = async function () {
+const search = ref("");
 
-};
-
-const modify_survey = async function () {
-
-};
-
-const items = ref([{ id: "", name: "", image: "", desc: "", price: 0 }]);
-const router = useRouter();
-
-const navigateWithId = function (id) {
-  router.push('/item/' + id)
-};
-
-onMounted(async () => {
-
-  const response = await fetch("https://api.npoint.io/5529943ab6c290922ca9");
-
-  if (response.ok) {
-    const fashionItems = await response.json();
-
-    items.value = fashionItems.filter(function (item) {
-      return item;
-    })
-  }
+watch(() => search.value, () => {
+  loadAsyncData();
 });
+
+const router = useRouter();
+const data = ref([]);
+const total = ref(0);
+const loading = ref(false);
+const page = ref(1);
+const perPage = ref(20);
+
+const loadAsyncData = () => {
+  const params = [
+    `page=${page.value}`,
+    `email=${search.value}`,
+  ].join("&");
+  loading.value = true;
+
+  fetch(`https://nice-water-05b1c7800.5.azurestaticapps.net/surveys?${params}`)
+    .then((response) => response.json())
+    .then((result) => {
+      perPage.value = result.perPage;
+      total.value = result.total;
+      data.value = result.surveys
+
+      loading.value = false;
+    })
+    .catch((error) => {
+      data.value = [];
+      total.value = 0;
+      loading.value = false;
+      throw error;
+    });
+};
+
+/*
+ * Handle modify button click event
+ */
+const handleModifyBtnClick = async (survey_id) => {
+  router.push({ name: 'survey-update', params: { id: survey_id } });
+};
+
+/*
+ * Handle delete button click event
+ */
+const handleDeleteBtnClick = async (survey_id) => {
+  try {
+    const token = localStorage.getItem('token');
+    var url = 'https://nice-water-05b1c7800.5.azurestaticapps.net/surveys';
+    url = url + survey_id;
+    const response = await fetch(url, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to delete the Survey.");
+    }
+
+    alert("Survey deleted successfully");
+    loadAsyncData();
+  } catch (error) {
+    console.error(error);
+    alert("Failed to delete Survey");
+  }
+};
+
+/*
+ * Handle page-change event
+ */
+const onPageChange = (p) => {
+  page.value = p;
+  loadAsyncData();
+};
+
+onMounted(() => {
+  loadAsyncData();
+});
+
+onMounted(() => {
+  document.title = "Surveys Management";
+});
+
 </script>
 
-<style scoped>
-#container {
-  text-align: center;
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-}
+<template>
+  <section>
+    <input class="form-control" v-model="search" placeholder="Search..." />
 
-#container strong {
-  font-size: 20px;
-  line-height: 26px;
-}
+    <o-table :data="data" :loading="loading" paginated backend-pagination :total="total" :per-page="perPage"
+      aria-next-label="Next page" aria-previous-label="Previous page" aria-page-label="Page"
+      aria-current-label="Current page" @page-change="onPageChange">
+      <o-table-column v-slot="props" field="original_title" label="email" sortable>
+        {{ props.row.email }}
+      </o-table-column>
+      <o-table-column v-slot="props" field="categories" label="categories" sortable>
+        {{ props.row.categories }}
+      </o-table-column>
+      <o-table-column v-slot="props" field="budget" label="budget" numeric sortable>
+        {{ props.row.budget }}
+      </o-table-column>
+      <o-table-column v-slot="props" field="purpose" label="purpose" numeric sortable>
+        {{ props.row.purpose }}
+      </o-table-column>
+      <o-table-column v-slot="props">
+        <button class="btn btn-primary" @click="handleModifyBtnClick(props.row._id)">Modify</button>
+      </o-table-column>
+      <o-table-column v-slot="props">
+        <button class="btn btn-danger" @click="handleDeleteBtnClick(props.row._id)">Delete</button>
+      </o-table-column>
+    </o-table>
+  </section>
 
-#container p {
-  font-size: 16px;
-  line-height: 22px;
-  color: #8c8c8c;
-  margin: 0;
-}
-
-#container a {
-  text-decoration: none;
-}
-</style>
+</template>

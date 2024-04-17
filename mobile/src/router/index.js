@@ -36,6 +36,11 @@ const routes = [
   {
     path: '/login',
     component: LoginPage,
+  },
+  {
+    name: 'survey-update',
+    path: '/:id/update',
+    component: () => import('@/views/UpdateSurveyPage.vue')
   }
 ]
 
